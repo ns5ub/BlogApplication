@@ -19,5 +19,29 @@ class SimpleBlogPost(models.Model):
     class Meta:
         ordering = ['-created_on']
 
+    def get_absolute_url(self):
+        from django.urls import reverse
+        return reverse('post_detail', args=[str(self.slug)])
+        #return ('post_detail', (), {'slug': self.slug})
+
     def __str__(self):
         return self.title
+
+
+class SimpleComment(models.Model):
+    post = models.ForeignKey(SimpleBlogPost, related_name='comments', on_delete= models.CASCADE)
+    name = models.CharField(max_length=80)
+    email = models.EmailField(max_length=200, blank=True)
+    body = models.TextField()
+    created_on = models.DateTimeField(auto_now_add=True)
+    active = models.BooleanField(default=True)
+    parent = models.ForeignKey('self', null=True, blank=True, related_name='replies', on_delete=models.DO_NOTHING)
+
+    class Meta:
+        # sort comments in chronological order by default
+        ordering = ['-created_on']
+
+    def __str__(self):
+        return 'Comment by {}'.format(self.name)
+
+

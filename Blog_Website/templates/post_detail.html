@@ -1,16 +1,77 @@
 {% extends 'base.html' %} {% block content %}
+{% load crispy_forms_tags %}
 
 <div class="container">
   <div class="row">
     <div class="col-md-8 card mb-4  mt-3 left  top">
       <div class="card-body">
-        <h1>{% block title %} {{ object.title }} {% endblock title %}</h1>
-        <p class=" text-muted">{{ simpleblogpost.author }} | {{ simpleblogpost.created_on }}</p>
-        <p class="card-text ">{{ object.content | safe }}</p>
+        <h1>{% block title %} {{ post.title }} {% endblock title %}</h1>
+        <p class=" text-muted">{{ post.author }} | {{ post.created_on }}</p>
+        <p class="card-text ">{{ post.content | safe }}</p>
       </div>
     </div>
     {% block sidebar %} {% include 'sidebar.html' %} {% endblock sidebar %}
   </div>
-</div>
 
+    <div class="col-md-8 card mb-4  mt-3 ">
+      <div class="card-body">
+        <h3>Leave a comment</h3>
+        <form method="post" style="margin-top: 1.3em;">
+          {{ comment_form | crispy }}
+          {% csrf_token %}
+          <button type="submit" class="btn btn-primary  btn-lg">Submit</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="col-md-8 card mb-4  mt-3 ">
+        <div class="card-body">
+        <!-- comments -->
+        <h2>{{ comments.count }} comments </h2>
+
+        {% for comment in comments %}
+            <div class="comments" style="padding: 10px;">
+                <p class="font-weight-bold">
+                    {{ comment.name }}
+                    <span class=" text-muted font-weight-normal">
+                        {{ comment.created_on }}
+                    </span>
+                </p>
+                {{ comment.body | linebreaks }}
+                <p>
+                    <a class="btn btn-primary" data-toggle="collapse" href="#collapse{{ comment.id }}" role="button" aria-expanded="false" aria-controls="collapseExample">
+                        Reply
+                    </a>
+                    <div class="collapse" id="collapse{{ comment.id }}">
+                        <div class="card card-body">
+                            <form action="." method="post">
+                              {{ comment_form | crispy }}
+                              {% csrf_token %}
+                              <!-- Hidden input for parent comment.id -->
+                              <input type="hidden" name="parent_id" value="{{ comment.id }}">
+                              <input class="btn btn-primary" type="submit" value="Reply">
+                            </form>
+                        </div>
+                    </div>
+                </p>
+
+                {% for reply in comment.replies.all %}
+                      <p class="font-weight-bold">
+                          {{ reply.name }}
+                          <span class=" text-muted font-weight-normal">
+                              {{ reply.created_on }}
+                          </span>
+                      </p>
+                    {{ reply.body | linebreaks }}
+                {% endfor %}
+
+            </div>
+        {% endfor %}
+
+      </div>
+    </div>
+
+
+  </div>
+</div>
 {% endblock content %}
