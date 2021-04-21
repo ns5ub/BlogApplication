@@ -14,7 +14,6 @@ class SimpleBlogPost(models.Model):
     slug = models.SlugField(max_length=200, unique=True)  # Slug: URL for the post
     content = models.TextField()
     created_on = models.DateTimeField(auto_now_add=True)
-    updated_on = models.DateTimeField(auto_now=True)
     # Assigning each blog post an author - default superuser in Django, but can be attached to an authentication service.
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blog_posts')
     # On default, posts are visible, but can be hidden by changing this marker
@@ -41,7 +40,7 @@ class SimpleComment(models.Model):
     body = models.TextField()
     created_on = models.DateTimeField(auto_now_add=True)
     # On default, comments are visible, but can be hidden by changing this marker
-    active = models.BooleanField(default=True)
+    status = models.IntegerField(choices=STATUS, default=1)
     # A comment can have a parent, but it isn't required. A comment reply is a comment on a comment
     parent = models.ForeignKey('self', null=True, blank=True, related_name='replies', on_delete=models.CASCADE)
 

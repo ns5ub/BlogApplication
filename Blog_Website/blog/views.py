@@ -35,13 +35,13 @@ def post_detail(request, slug):
         comment_form = SimpleCommentForm(data=request.POST)
         if comment_form.is_valid():
             # Get the parent id:
-            parent_obj = None
             try:
                 parent_id = int(request.POST.get('parent_id'))
             except:
                 parent_id = None
 
             # Get the parent comment
+            parent_obj = None
             if parent_id:
                 parent_obj = SimpleComment.objects.get(id=parent_id)
                 if parent_obj:
@@ -69,7 +69,7 @@ def post_detail(request, slug):
 # Function to get the comments in order given a post
 def get_nested_comments(post):
     # Get the comments without a parent, pass to the recursive function
-    parent_comments = post.comments.filter(active=True, parent__isnull=True)
+    parent_comments = post.comments.filter(status=1, parent__isnull=True).order_by('-created_on')
     comments_ordered = []
     comments_ordered= get_nested_comments_helper(parent_comments, comments_ordered, indent=0)
     return comments_ordered

@@ -14,8 +14,8 @@ class SimpleBlogPostAdmin(admin.ModelAdmin):
 
 @admin.register(SimpleComment)
 class SimpleCommentAdmin(admin.ModelAdmin):
-    list_display = ('name', 'body', 'post', 'created_on', 'active')
-    list_filter = ('active', 'created_on')
+    list_display = ('name', 'body', 'post', 'created_on', 'status')
+    list_filter = ('status', 'created_on')
     search_fields = ('name', 'email', 'body')
     actions = ['delete_comments']
 
