@@ -21,12 +21,10 @@
   <component name="ChangeListManager">
     <list default="true" id="cbd2f9f4-b563-4c54-82b3-d053804dd05f" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Blog_Website/blog/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/Blog_Website/blog/forms.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Blog_Website/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/Blog_Website/db.sqlite3" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Blog_Website/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/Blog_Website/templates/base.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Blog_Website/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/Blog_Website/templates/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Blog_Website/templates/post_detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/Blog_Website/templates/post_detail.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Blog_Website/templates/sidebar.html" beforeDir="false" afterPath="$PROJECT_DIR$/Blog_Website/templates/sidebar.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
