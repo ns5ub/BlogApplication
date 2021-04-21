@@ -1,56 +1,61 @@
-from django.http import HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404
-
-# Create your views here.
 from django.views import generic
 from .models import SimpleBlogPost, SimpleComment
 from .forms import SimpleCommentForm
 from django.shortcuts import render, get_object_or_404
+from django.http import HttpResponseRedirect
+
+# Create your views here.
 
 
 class SimpleBlogPostList(generic.ListView):
+    # Using the given "List View" to list out all of the simple blog posts
     queryset = SimpleBlogPost.objects.filter(status=1).order_by('-created_on')
     template_name = 'index.html'
 
 
 class SimpleBlogPostDetail(generic.DetailView):
+    # Original Post Detail for a Blog Post
+    # path('<slug:slug>/', views.SimpleBlogPostDetail.as_view(), name='post_detail'),
     model = SimpleBlogPost
     template_name = 'post_detail.html'
 
 
 def post_detail(request, slug):
+    # Get the Post that corresponds to the slug, or URL
     template_name = 'post_detail.html'
     post = get_object_or_404(SimpleBlogPost, slug=slug)
+
+    # Get the comments which do not have a parent themselves
     comments = post.comments.filter(active=True, parent__isnull=True)
+
+    # If a comment has been added: do the dollowing
     if request.method == 'POST':
-        # comment has been added
+        # Get the form
         comment_form = SimpleCommentForm(data=request.POST)
         if comment_form.is_valid():
+            # Get the parent id:
             parent_obj = None
-            # get parent comment id from hidden input
             try:
-                # id integer e.g. 15
                 parent_id = int(request.POST.get('parent_id'))
             except:
                 parent_id = None
-            # if parent_id has been submitted get parent_obj id
+
+            # Get the parent comment
             if parent_id:
                 parent_obj = SimpleComment.objects.get(id=parent_id)
-                # if parent object exist
                 if parent_obj:
-                    # create replay comment object
+                    # create reply comment object
                     reply_comment = comment_form.save(commit=False)
-                    # assign parent_obj to replay comment
                     reply_comment.parent = parent_obj
-            # normal comment
+
+            # Else, it is a normal comment
             # create comment object but do not save to database
             new_comment = comment_form.save(commit=False)
-            # assign ship to the comment
             new_comment.post = post
-            # save
             new_comment.save()
-            return HttpResponseRedirect(post.get_absolute_url())
+            return HttpResponseRedirect(post.get_absolute_url())  # Redirect user to post
     else:
+        # If not a post, just output the form
         comment_form = SimpleCommentForm()
     return render(request,
                   template_name,
