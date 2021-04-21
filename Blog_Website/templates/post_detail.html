@@ -53,54 +53,47 @@
 
     </div>
 
-    <div class="row justify-content-md-center">
+     <div class="row justify-content-md-center">
         <div class="col-md-8 card mb-4  mt-3 ">
             <div class="card-body">
-            <!-- comments -->
-            <h2>{{ comments.count }} comments </h2>
-            {% for comment in comments %}
-                <div class="comments" style="padding: 10px;">
-                    <p class="font-weight-bold">
-                        {{ comment.name }}
-                        <span class=" text-muted font-weight-normal">
-                            {{ comment.created_on }}
-                        </span>
-                    </p>
-                    {{ comment.body | linebreaks }}
-                    <p>
-                        <a class="btn btn-primary" data-toggle="collapse" href="#collapse{{ comment.id }}" role="button" aria-expanded="false" aria-controls="collapseExample">
-                            Reply
-                        </a>
-                        <div class="collapse" id="collapse{{ comment.id }}">
-                            <div class="card card-body">
-                                <form action="." method="post">
-                                  {{ comment_form | crispy }}
-                                  {% csrf_token %}
-                                  <!-- Hidden input for parent comment.id -->
-                                  <input type="hidden" name="parent_id" value="{{ comment.id }}">
-                                  <input class="btn btn-primary" type="submit" value="Reply">
-                                </form>
-                            </div>
-                        </div>
-                    </p>
-
-                    {% for reply in comment.replies.all %}
-                        <div class="row">
-                            <div class="col-sm-1"></div>
-                            <div class="col-sm-11">
+            <!-- comments - given in order. The indent is which tier of comment it is. -->
+            <h2>{{ count }} comments </h2>
+            {% for comment,indent,size in comments_ordered %}
+                <div class="comments">
+                    <!-- if it is a parent comment, add some space-->
+                    {% if indent == 0 %}
+                        <br>
+                    {% endif %}
+                    <div class="row">
+                            <!-- Display -->
+                            <div class="col-sm-{{ indent }}"></div>
+                            <div class="col-sm-{{ size }}">
                                 <p class="font-weight-bold">
-                                    {{ reply.name }}
+                                    {{ comment.name }}
                                     <span class=" text-muted font-weight-normal">
-                                        {{ reply.created_on }}
+                                        {{ comment.created_on }}
                                     </span>
                                 </p>
-                                {{ reply.body | linebreaks }}
+                                {{ comment.body | linebreaks }}
+                                <p>
+                                    <!-- Reply to a certain comment - form with parent id. -->
+                                    <a class="btn btn-dark" data-toggle="collapse" href="#collapse{{ comment.id }}" role="button" aria-expanded="false" aria-controls="collapseExample">
+                                        Reply
+                                    </a>
+                                    <div class="collapse" id="collapse{{ comment.id }}">
+                                        <div class="card card-body">
+                                            <form action="." method="post">
+                                              {{ comment_form | crispy }}
+                                              {% csrf_token %}
+                                              <!-- Hidden input for parent comment.id -->
+                                              <input type="hidden" name="parent_id" value="{{ comment.id }}">
+                                              <input class="btn btn-primary" type="submit" value="Submit">
+                                            </form>
+                                        </div>
+                                    </div>
+                                </p>
                             </div>
-                        </div>
-
-                    {% endfor %}
-
-                    <br>
+                    </div>
 
                 </div>
             {% endfor %}

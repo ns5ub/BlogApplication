@@ -25,10 +25,11 @@ def post_detail(request, slug):
     template_name = 'post_detail.html'
     post = get_object_or_404(SimpleBlogPost, slug=slug)
 
-    # Get the comments which do not have a parent themselves
-    comments = post.comments.filter(active=True, parent__isnull=True)
+    # Get the comments in order by reply
+    comments_ordered = get_nested_comments(post)
+    count = len(comments_ordered)
 
-    # If a comment has been added: do the dollowing
+    # If a comment has been added: do the following
     if request.method == 'POST':
         # Get the form
         comment_form = SimpleCommentForm(data=request.POST)
@@ -49,7 +50,6 @@ def post_detail(request, slug):
                     reply_comment.parent = parent_obj
 
             # Else, it is a normal comment
-            # create comment object but do not save to database
             new_comment = comment_form.save(commit=False)
             new_comment.post = post
             new_comment.save()
@@ -60,5 +60,27 @@ def post_detail(request, slug):
     return render(request,
                   template_name,
                   {'post': post,
-                   'comments': comments,
-                   'comment_form': comment_form})
+                   'comment_form': comment_form,
+                   'comments_ordered': comments_ordered,
+                   'count' : count,
+                   })
+
+
+# Function to get the comments in order given a post
+def get_nested_comments(post):
+    # Get the comments without a parent, pass to the recursive function
+    parent_comments = post.comments.filter(active=True, parent__isnull=True)
+    comments_ordered = []
+    comments_ordered= get_nested_comments_helper(parent_comments, comments_ordered, indent=0)
+    return comments_ordered
+
+
+def get_nested_comments_helper(comment_list, comments_ordered, indent = 0):
+    for c in comment_list:
+        # For each comment, add it to the list. Then call the same function on it's list of replies
+        comments_ordered.append((c,indent, 12-indent))
+        c_replies = c.replies.all()
+        if c_replies:
+            # Pass in and edit the same list to build it up. Increment the indent for each level.
+            comments_ordered = get_nested_comments_helper(c_replies, comments_ordered, indent=indent + 1)
+    return comments_ordered
